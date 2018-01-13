@@ -1,7 +1,4 @@
 var httpUrl={
-    webSiteUrl:"https://www.xw18.cn/xw/WebSiteService",
-    clientUrl:"https://www.xw18.cn/xw/ClientService",
-    merchantUrl:"https://www.xw18.cn/xw/MerchantService"
 }
 
 
