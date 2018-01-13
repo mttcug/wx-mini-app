@@ -1,0 +1,20 @@
+{
+	"client": "./client",
+	"svr": "./server",
+	"appid": "wx70d9596dca9e9a0f",
+	"projectname": "ppw-mini-app",
+	"condition": {
+		"weapp": {
+			"current": -1,
+			"list": []
+		},
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		}
+	}
+}

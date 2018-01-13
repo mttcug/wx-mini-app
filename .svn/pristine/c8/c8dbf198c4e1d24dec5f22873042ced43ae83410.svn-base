@@ -1,0 +1,141 @@
+<view wx:if="{{loadCompleted}}" class="page" style="height: {{pageContent}}px;">
+  <!--轮播图-->
+  <view class="carousel" wx:if="{{pageNum > 0}}">
+    <swiper bindchange="pageChange" current="{{currentPage}}" class="swiper" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}">
+      <block wx:key="*this" wx:for="{{shopDetail.content.photos}}">
+        <swiper-item class="swiper-item">
+          <image src="{{item.url}}" class="slide-image" />
+        </swiper-item>
+      </block>
+      <view class="rent-tag" wx:if="{{shopDetail.content.type==2}}">
+        <image src="../../images/common/rent.png"></image>
+      </view>
+      <view class="image-tag">
+        <image src="../../images/common/img-tag.png"></image>
+        <view class="page-num">{{currentPage+1}}/{{pageNum}}</view>
+      </view>
+    </swiper>
+  </view>
+  <!--商铺信息-->
+  <view class="shop-info">
+    <view class="info-title">
+      {{shopDetail.title}}
+      <image wx:if="{{shopDetail.status==2}}" class="fee" src="../../images/common/fee.png"></image>
+    </view>
+    <view class="side-info">
+      <view class="left-line"></view>
+      <view wx:if="{{shopDetail.content.type==1}}" class="info">店铺转让 编号:{{shopDetail.opportunityId}}</view>
+      <view wx:if="{{shopDetail.content.type==2}}" class="info">出租招商 编号:{{shopDetail.opportunityId}}</view>
+      <view class="right-line"></view>
+    </view>
+    <!--店铺转让-->
+    <view wx:if="{{shopDetail.content.type==1}}" class="main-info">
+      <view class="area">
+        <view class="title">面积</view>
+        <view class="data">{{shopDetail.content.area}}㎡</view>
+      </view>
+      <view class="transfer-fee">
+        <view class="title"> 转让费</view>
+        <view wx:if="{{shopDetail.content.transferFee > 0 && shopDetail.content.negotiable==0 }}" class="data">{{shopDetail.content.transferFee/1000000}}万元</view>
+        <view wx:if="{{shopDetail.content.negotiable==1 }}" class="data">面议</view>
+      </view>
+      <view class="rent-fee">
+        <view class="title"> 租金({{shopDetail.content.rentMeasure}})</view>
+        <view wx:if="{{shopDetail.content.rent > 0}}" class="data">{{shopDetail.content.rent/100}}</view>
+        <view wx:if="{{shopDetail.content.rent == 0 || shopDetail.content.rent == null}}" class="data">面议</view>
+      </view>
+    </view>
+    <!--出租招商-->
+    <view wx:if="{{shopDetail.content.type==2}}" class="main-info">
+      <view class="area-rent">
+        <view class="title">面积</view>
+        <view class="data">{{shopDetail.content.area}}㎡</view>
+      </view>
+      <view class="rent-fee-Rent">
+        <view class="title"> 租金(元/月)</view>
+         <view wx:if="{{shopDetail.content.rent > 0}}" class="data">{{shopDetail.content.rent}}</view>
+        <view wx:if="{{shopDetail.content.rent == 0 || shopDetail.content.rent == null}}" class="data">面议</view>
+      </view>
+    </view>
+  </view>
+  <!--信息详情-->
+  <view class="info-detail">
+    <view class="item-detail">
+      <view wx:if="{{shopDetail.content.type==1 && shopDetail.content.industryId}}" class="industry detail-sort">
+        <view class="title" style="letter-spacing:16rpx;">行 业</view>
+        <view class="items">{{shopDetail.content.industryId}}</view>
+      </view>
+      <view wx:if="{{shopDetail.content.type==2 && shopDetail.content.shopName }}" class="industry detail-sort">
+        <view class="title" style="letter-spacing:16rpx;">楼 盘</view>
+        <view class="items">{{shopDetail.content.shopName}}</view>
+      </view>
+      <view wx:if="{{shopDetail.content.districtId}}" class="location detail-sort">
+        <view class="title" style="letter-spacing:16rpx;">区 域</view>
+        <view class="items">{{shopDetail.content.districtId}}</view>
+      </view>
+      <view wx:if="{{shopDetail.content.type==1 && shopDetail.content.businessStatus}}" class="operate-state detail-sort">
+        <view class="title">经营状态</view>
+        <view wx:if="{{shopDetail.content.businessStatus==1}}" class="items">营业中</view>
+        <view wx:if="{{shopDetail.content.businessStatus==2}}" class="items">未营业</view>
+      </view>
+      <view wx:if="{{shopDetail.content.type==1 && shopDetail.content.emptyTransfer}}" class="transfer-without-facilities detail-sort">
+        <view class="title">可否空转</view>
+        <view wx:if="{{shopDetail.content.emptyTransfer==1}}" class="items">是</view>
+         <view wx:if="{{shopDetail.content.emptyTransfer==2}}" class="items">否</view>
+      </view>
+      <view wx:if="{{shopDetail.content.contractPeriod > 0}}"  class="rest-time detail-sort">
+        <view class="title">剩余合同</view>
+        <view class="items">{{shopDetail.content.contractPeriod}}个月</view>     
+      </view>
+      <view class="fit-operate detail-sort">
+        <view class="title">适合经营</view>
+        <view class="items">{{shopDetail.content.fitIndustry}}</view>
+      </view>
+    </view>
+    <!--地址-->
+    <view  wx:if="{{shopDetail.content.address !=''}}" class="address-block">
+      <image class="map-tag" src="../../images/common/map.png"></image>
+      <view  class="address">{{shopDetail.content.address}}</view>     
+    </view>
+    <!--物业配套-->
+    <view wx:if="{{hasFacilities.length > 0}}" class="facilities">
+      <view class="title">物业配套</view>
+      <view class="facility-img-tag">
+        <view wx:for="{{hasFacilities}}"  wx:key="index"  wx:if="{{index<4}}" class="img-tag-item-block">
+          <image src="{{item.imageUrl}}"></image>
+          <view class="decription">{{item.title}}</view>
+        </view>   
+
+        <navigator wx:if="{{ facilitiesLength > 4 }}" url="../facility/facilities-list?facilities={{shopDetail.content.facilities}}" class="img-tag-item-block">
+          <image src="../../images/common/facilities_more.png"></image>
+          <view class="decription">更多</view>
+        </navigator>
+      </view>
+    </view>
+    <!--店铺描述-->
+    <view wx:if="{{shopDetail.description!=''}}" class="shop-decription">
+      <view class="title">店铺描述</view>
+      <view class="decription">{{shopDetail.description}}</view>
+    </view>
+    <view class="space-block"></view>
+  </view>
+  <!--客服服务方式-->
+  <view class="customer-service">
+    <view class="customer-info">
+      <view class="name">{{shopDetail.contact}}</view>
+      <view class="phone-number">{{shopDetail.mobile}}</view>
+    </view>
+    <!--<navigator url="../../http://vipwebchat.tq.cn/pageinfo.jsp?version=vip&amp;admiuin=8260882&amp;ltype=0&amp;iscallback=0&amp;page_templete_id=21644&amp;is_message_sms=0&amp;is_send_mail=0&amp;action=acd&amp;acd=1&amp;type_code=3" class="tq">
+      <image class="tq-tag" src="../../images/common/customer.png"></image>
+      <view class="title">客服</view>
+    </navigator>-->
+    <navigator  class="tq" data-customerCall='{{customerMobile}}' bindtap="makeCustomerPhoneCall">    
+        <image class="tq-tag" src="../../images/common/customer.png"></image>
+        <view class="title">客服</view>     
+    </navigator>
+     
+    <navigator class="call"   data-call='{{shopDetail.mobile}}' bindtap="makePhoneCall">
+      <image class="call-tag" src="../../images/common/phone.png"></image>
+    </navigator>
+  </view>
+</view>

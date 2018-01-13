@@ -1,0 +1,249 @@
+var promise = require('../libs/es6-promise/es6-promise.min.js');
+var jsonRpcRequest = require('jsonRpcRequestService.js');
+
+
+
+
+//行业数据
+var ALLINDUSTRYDATA = [], bigIndustryData = [], smallIndustryData = [];
+function getIndustryList() {
+  ALLINDUSTRYDATA = [], bigIndustryData = [], smallIndustryData = [];
+  return new Promise((resolve, reject) => {
+    var params = { sessionId: '' };
+    jsonRpcRequest.baseDataRequest('baseData_listIndustry', params).then(function (result) {
+      var res = result.data.result;
+      //筛选出大行业
+      res.objects.forEach(function (value, key) {
+        ALLINDUSTRYDATA.push(value);
+        value.code.toString().length == 2 ? bigIndustryData.push(value) : '';
+      });
+      //过滤出小行业
+      for (let value of bigIndustryData) {
+        var tempContainer = [];
+        for (var item of ALLINDUSTRYDATA) {
+          (item.code.toString().length > 2 && item.code.toString().substr(0, 2) == value.code.toString()) ? tempContainer.push(item) : '';
+        }
+        smallIndustryData.push(tempContainer);
+      }
+      bigIndustryData[0].code.toString() != '00' ? bigIndustryData.unshift({ code: '00', name: '不限' }) : '';
+      smallIndustryData[0][0].code.toString() != '0000' ? smallIndustryData.unshift([{ code: '0000', name: '不限' }]) : '';
+      // console.log("小行业：", smallIndustryData);
+      var industry = {
+        ALLINDUSTRYDATA: ALLINDUSTRYDATA,
+        bigIndustryData: bigIndustryData,
+        smallIndustryData: smallIndustryData
+      }
+      wx.setStorage({ key: "bigIndustryData", data: bigIndustryData });
+      wx.setStorage({ key: "smallIndustryData", data: smallIndustryData });
+      resolve(industry);
+    });
+  })
+}
+
+
+
+
+
+//区域数据
+var ALLLOCATIONDATA = [], city = [], districts = [], smalldistricts = [], bigLocationData = [], smallLocationData = [];
+function getLocationList() {
+  ALLLOCATIONDATA = [], city = [], districts = [], smalldistricts = [], bigLocationData = [], smallLocationData = [];
+  return new Promise((resolve, reject) => {
+    var params = { sessionId: '' };
+    jsonRpcRequest.baseDataRequest('baseData_listDistrict', params).then(function (result) {
+      var res = result.data.result;
+      //筛选出大行业
+      res.objects.forEach(function (value, key) {
+        ALLLOCATIONDATA.push(value);
+        //所有的市
+        value.code.toString().length == 4 ? city.push(value) : '';
+        //所有市内区域
+        value.code.toString().length == 6 ? districts.push(value) : '';
+        //所有区域内小区域
+        value.code.toString().length == 8 ? smalldistricts.push(value) : '';
+      });
+      //获取后城市列表后得到字母列表     
+      module.exports.city = city;
+
+      var location = {
+        ALLLOCATIONDATA: ALLLOCATIONDATA,
+        city: city,
+        districts: districts,
+        smalldistricts: smalldistricts
+      }
+      wx.setStorage({ key: "location", data: location });
+      wx.setStorage({ key: "city", data: city });
+      wx.setStorage({ key: "districts", data: districts });
+      wx.setStorage({ key: "smalldistricts", data: smalldistricts });
+      resolve(location);
+    });
+  })
+}
+
+
+
+
+//获取当前城市
+var currentCity = '';
+function getCurrentCityItem() {
+  return new Promise((resolve, reject) => {
+    wx.getLocation({
+      type: 'gcj02',
+      success: function (res) {
+        var latitude = res.latitude
+        var longitude = res.longitude
+        var speed = res.speed
+        var accuracy = res.accuracy
+        wx.request({
+          url: 'https://api.map.baidu.com/geocoder/v2/?ak=fN66w00hfey6hwEyhFcYFRvvwe4a0pOG&location=' + latitude + ',' + longitude + '&output=json',
+          data: {},
+          header: {
+            'Content-Type': 'application/json'
+          },
+          success: function (res) {
+            // success 
+            var tempCity = res.data.result.addressComponent.city;
+            var currentCityName = tempCity.substr(0, tempCity.length - 1);
+
+            var currentCityItem = cityNameToCityItem(currentCityName);
+            wx.setStorage({ key: "currentCityItem", data: currentCityItem });
+
+            resolve(currentCityItem)
+          }
+        })
+      }
+    })
+  })
+}
+
+
+
+//根据城市名称获取对应城市的object(code，name)
+function cityNameToCityItem(cityname) {
+  var cityName = cityname;
+  return city.find(item => item.name === cityName) ? city.find(item => item.name === cityName) : '';
+}
+
+//获取当前城市下的区域和小区域
+var bigLocationData = [],smallLocationData = [];
+function cityMatchDistrict(currentCityItem) {
+  bigLocationData = [], smallLocationData = [];
+  return new Promise((resolve, reject) => {
+    wx.getStorage({
+      key: 'districts', success: function (res) {
+        var districts = res.data;
+        //找到当前城市对应的区域
+        districts.forEach(function (value, index) {
+          (currentCityItem != undefined && value.code.toString().substr(0, 4) == currentCityItem.code.toString()) ? bigLocationData.push(value) : '';
+        });
+        //过滤出区域下对应的小区域
+        bigLocationData.forEach((value, index) => {
+          var tempContainer = [];
+          for (var item of smalldistricts) {
+            item.code.toString().substr(0, 6) == value.code.toString() ? tempContainer.push(item) : '';
+          }
+          var _code = value.code.toString() + '00';  //不限区域code设置440301+00
+          tempContainer[0].code.toString() != _code ? tempContainer.unshift({ code: _code, name: '不限区域' }) : '';
+          smallLocationData.push(tempContainer);
+        })
+        var _bigCode = currentCityItem.code.toString() + '0000';
+        bigLocationData[0].code.toString() != _bigCode ? bigLocationData.unshift({ code: '000000', name: '全城' }) : '';
+        smallLocationData[0][0].code.toString() != '00000000' ? smallLocationData.unshift([{ code: '00000000', name: '全城' }]) : '';
+        var cityMatchesDistrict = {
+          bigLocationData: bigLocationData,
+          smallLocationData: smallLocationData
+        }
+        resolve(cityMatchesDistrict);
+      }
+    })
+  })
+}
+
+
+
+var hotCities = [{ code: '4403', name: "深圳" }, { code: '1101', name: "北京" }, { code: '3101', name: "上海" }, { code: '4401', name: "广州" }, { code: '3301', name: "杭州" }];
+
+var letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+var letterItemCity = { name: "", itemArr: [] };
+var allExistCitiesList = [];
+//获取选择城市的城市列表
+function letterCityList() {
+  allExistCitiesList = [];
+  return new Promise((resolve, reject) => {
+    letters.forEach(function (value, index) {
+      var tempContainer = {};
+      tempContainer.name = value;
+      tempContainer.itemArr = [];
+
+      wx.getStorageSync('city').forEach(function (cityValue, cityIndex) {
+        var firstLetter = cityValue.pinyin.substr(0, 1).toUpperCase();
+        if (firstLetter == value.toString()) {
+          tempContainer.itemArr.push(cityValue);
+        }
+      });
+
+      if (tempContainer.itemArr && tempContainer.itemArr.length && tempContainer.itemArr.length > 0) {
+        allExistCitiesList.push(tempContainer);
+      }
+      resolve(allExistCitiesList);
+    })
+  })
+}
+
+// module.exports.letterCityList = letterCityList;
+
+//搜索城市列表输入相关的列表项
+function searchCityRelative(val) {
+  if (val.toString() == '') {
+    return '';
+  }
+  var length = val.toString().length;
+  var container = [];
+  var regex = /\w/;
+  city.forEach(function (value, index) { console.log("city:", value, value.name,index );})  
+  city.forEach(function (value, index) {
+    ( regex.test(val) && value.pinyin.substr(0, length) == val) ? container.push(value) : '';  
+    ( !regex.test(val) && value.name.toString().substr(0, length) == val) ? container.push(value) : '';
+  })
+  return container;
+}
+
+
+var areaData = [{ name: "不限", min: 0, max: 0 }, { name: "20平米以下", min: 0, max: 20 }, { name: "20-50平米", min: 20, max: 50 }, { name: "50-100平米", min: 50, max: 100 }, {
+  name: "100-200平米", min: 100, max: 200
+}, { name: "200-500平米", min: 200, max: 500 }, { name: "500平米以上", min: 500, max: 999999 }]
+
+
+
+var facilitiesData = [
+  { index: 8, title: "产权", imageUrl: "../../images/common/facilities_1.png" },
+  { index: 9, title: "证件齐全", imageUrl: "../../images/common/facilities_2.png" },
+  { index: 7, title: "停车位", imageUrl: "../../images/common/facilities_3.png" },
+  { index: 1, title: "可明火", imageUrl: "../../images/common/facilities_4.png" },
+  { index: 3, title: "380V", imageUrl: "../../images/common/facilities_5.png" },
+  { index: 2, title: "上下水", imageUrl: "../../images/common/facilities_6.png" },
+  { index: 4, title: "煤气管道", imageUrl: "../../images/common/facilities_7.png" },
+  { index: 5, title: "排污管道", imageUrl: "../../images/common/facilities_8.png" },
+  { index: 6, title: "排烟管道", imageUrl: "../../images/common/facilities_9.png" },
+]
+
+
+// getLocationList();
+
+module.exports = {
+  getIndustryList: getIndustryList,
+  getLocationList: getLocationList,
+  getCurrentCityItem: getCurrentCityItem,
+  cityNameToCityItem: cityNameToCityItem,
+  cityMatchDistrict: cityMatchDistrict,
+  letterCityList: letterCityList,
+
+  hotCities: hotCities,
+  searchCityRelative: searchCityRelative,
+
+
+  ALLINDUSTRYDATA: ALLINDUSTRYDATA,
+  ALLLOCATIONDATA: ALLLOCATIONDATA,
+  areaData: areaData,
+  facilitiesData: facilitiesData
+}

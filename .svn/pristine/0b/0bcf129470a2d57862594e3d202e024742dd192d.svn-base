@@ -1,0 +1,53 @@
+// request.js
+var promise = require('../libs/es6-promise/es6-promise.min.js');
+
+
+
+function listRequest(method, params) {
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: 'https://www.xw18.cn/xw/WebSiteService',
+      // url: "https://192.168.1.158/xw/WebSiteService",
+      method: 'POST',
+      data: { id: 1,jsonrpc: "2.0",method: method,params: params},
+      header: {'content-type': 'application/json'},
+      success: resolve,
+      fail: reject
+    })
+  })
+}
+
+function baseDataRequest(method, params) {
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: 'https://www.xw18.cn/xw/ClientService',
+      // url: "https://192.168.1.158/xw/ClientService",
+      method: 'POST',
+      data: {id: 1,jsonrpc: "2.0", method: method, params: params},
+      header: {'content-type': 'application/json' },
+      success: resolve,
+      fail: reject
+    })
+  })
+}
+
+function merchantRequest(method, params) {
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: 'https://www.xw18.cn/xw/MerchantService',
+      // url: "https://192.168.1.158/xw/ClientService",
+      method: 'POST',
+      data: { id: 1, jsonrpc: "2.0", method: method, params: params },
+      header: { 'content-type': 'application/json' },
+      success: resolve,
+      fail: reject
+    })
+  })
+}
+
+
+module.exports = {
+  listRequest: listRequest,
+  baseDataRequest: baseDataRequest,
+  merchantRequest: merchantRequest
+}

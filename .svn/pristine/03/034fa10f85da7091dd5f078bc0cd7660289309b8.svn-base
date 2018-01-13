@@ -1,0 +1,361 @@
+
+
+var promise = require('../../js/libs/es6-promise.min.js');
+var constant = require("../../js/commonjs/constant");
+var industryData = require('../../js/service/industry.js');
+var district = require('../../js/service/district.js');
+var currentCity = require('../../js/service/currentCity.js');
+var districtOfCity = require('../../js/service/districtsOfCity.js');
+var cityIdByNameFilter = require('../../js/filter/cityIdByNameFilter.js');
+var waterMarkFilter = require('../../js/filter/waterMarkFilter.js');
+var stampTimeFilter = require('../../js/filter/stampTimeFilter.js');
+var request = require('../../js/service/httpReq.js');
+
+Page({
+  data: {
+    windowHeight: 600,
+    listShow: false,
+    pageScroll: true,//页面是否滚动
+    tabs: ["行业", "区域", "面积"],
+    activeIndex: 0,
+    sliderOffset: 0,
+    sliderLeft: 0,
+    // 行业tab
+    industries: [],
+    activeIndustryIndex: 0,
+    activeSmallSelected: null,
+    smallIndustry: [],
+    // 区域tab   
+    locations: [],
+    activeLocationIndex: 0,
+    activeSmallLocationSelected: null,
+    smallLocations: [],
+    //面积tab
+    area: constant.areaData,
+    activeAreaSelected: null,
+
+    //用于存储页面tab被选中的值
+    datasetIndustry: null,
+    datasetLocation: null,
+    datasetminArea: null,
+    datasetmaxArea: null,
+
+    currentCityItem: {},
+    transferList: [],
+    pageNo: 0,
+    noData: true  
+  },
+
+  //时间戳转换函数
+  stampToTime: function (value) {
+    var realtime = new Date(parseInt(value.updateTime));
+    value.updateTime = stampTimeFilter.stampTime(realtime);
+  },
+
+  //区域面积和行业点击选择时展开与否
+  tabClick: function (e) {
+    this.setData({ sliderOffset: e.currentTarget.offsetLeft, pageScroll: false });
+
+    //再次点击同一个则收起下拉列表，如果点击的不同则不用收起  
+    if (e.currentTarget.id == undefined || e.currentTarget.id == ''){
+      this.setData({  listShow: false });
+      return;
+    }
+
+    if (this.data.activeIndex == e.currentTarget.id) {
+      this.setData({ listShow: this.data.listShow ? false : true });
+    } else {
+      this.setData({ activeIndex: e.currentTarget.id, listShow: true });
+    }
+  },
+
+  //选择行业点击事件
+  selectIndustry: function (e) {
+    this.setData({
+      activeIndustryIndex: e.currentTarget.id
+    });
+  },
+
+
+  //地区选择点击事件
+  selectLocation: function (e) {
+    this.setData({
+      activeLocationIndex: e.currentTarget.id
+    });
+  },
+
+
+  //点击小行业
+  selectSmallIndustry: function (e) {
+    var that = this;
+
+    this.setData({
+      activeSmallSelected: e.currentTarget.id,
+      listShow: false,
+      pageScroll: true,
+      pageNo: 0
+    });
+
+    e.currentTarget.id.toString() == '0000' ? this.setData({ datasetIndustry: null }) : this.setData({ datasetIndustry: e.currentTarget.dataset.industry })
+
+    this.clickToRequest(e);
+  },
+
+
+  //点击小区域
+  selectSmallLocation: function (e) {
+    var that = this;
+
+    this.setData({
+      activeSmallLocationSelected: e.currentTarget.id,
+      listShow: false,
+      pageScroll: true,
+      pageNo: 0
+    });
+
+    //判断选的是否是全城或区域不限，全城则搜索当前城市，不限区域则搜索大区域
+    var tailFourNum = e.currentTarget.id.toString().substr(e.currentTarget.id.toString().length - 4);
+
+    var cityNum = e.currentTarget.id.toString().substr(0, 4);
+
+    //0000所有区域记这个城市00则是大区域在否则是选择了小区域
+    if (tailFourNum == '0000') {
+      this.setData({ datasetLocation: cityNum })
+    } else {
+      var tailTwoNum = e.currentTarget.id.toString().substr(e.currentTarget.id.toString().length - 2);
+
+      var bigDistrict = e.currentTarget.id.toString().substr(0, 6);
+
+      tailTwoNum == '00' ? this.setData({ datasetLocation: bigDistrict }) : this.setData({ datasetLocation: e.currentTarget.dataset.location });
+    }
+    this.clickToRequest(e);
+  },
+
+
+
+  //点击面积
+  selectArea: function (e) {
+    var that = this;
+
+    this.setData({
+      activeAreaSelected: e.currentTarget.id,
+      listShow: false,
+      pageScroll: true,
+      pageNo: 0,
+      datasetminArea: e.currentTarget.dataset.minarea,
+      datasetmaxArea: e.currentTarget.dataset.maxarea
+    });
+
+    e.currentTarget.id == 0 ? this.setData({ datasetminArea: null, datasetmaxArea: null }) : this.setData({ datasetminArea: e.currentTarget.dataset.minarea, datasetmaxArea: e.currentTarget.dataset.maxarea })
+
+    this.clickToRequest(e);
+  },
+
+
+  //行业区域面积点击选择是请求数据
+  clickToRequest: function (e) {
+    var that = this;
+
+    wx.showLoading({
+      title: '加载中'
+    })
+
+    //开始请求数据
+    var transferParams = {
+      query: {
+        keyword: '', cityId: that.data.currentCityItem.code,
+        districtId: that.data.datasetLocation,
+        industryId: that.data.datasetIndustry,
+        minArea: that.data.datasetminArea,
+        maxArea: that.data.datasetmaxArea,
+        minRent: null, maxRent: null, matchSuitableIndustry: '', hasPhoto: '', isBusiness: '', canEmptyTransfer: ''
+      },
+      pageNo: 0,
+      pageSize: 20
+    }
+
+    request.getTransferList(transferParams).then(result => {
+      var res = result.data.result;
+
+      //请求结果无数据则提示无数据
+      if (res.totalCount == 0) {
+        //隐藏加载中
+        setTimeout(function () {          
+          that.setData({ transferList: res.objects, noData: false })
+          wx.hideLoading();
+        }, 10)
+      } else {
+
+        //有数据则显示数据,转换时间和图片地址
+        res.objects.forEach((value, index) => { value.photoUrl = waterMarkFilter.waterMark(value.photoUrl); that.stampToTime(value); });
+
+        that.setData({ transferList: res.objects, noData: true })
+
+      }
+      //隐藏加载中
+      setTimeout(function () { wx.hideLoading() }, 500)
+    });
+  },
+
+
+
+  //上拉刷新
+  loadData: function (e) {    
+    var that = this;
+
+    wx.showLoading({
+      title: '加载中',
+    })
+
+
+    //请求数据
+    var newPageNum = this.data.pageNo + 1;
+    this.setData({ pageNo: newPageNum });
+    var transferParams = {
+      query: {
+        keyword: '', cityId: that.data.currentCityItem.code,
+        districtId: that.data.datasetIndustry,
+        industryId: that.data.datasetLocation,
+        minArea: that.data.datasetminArea,
+        maxArea: that.data.datasetmaxArea,
+        minRent: null, maxRent: null, matchSuitableIndustry: '', hasPhoto: '', isBusiness: '', canEmptyTransfer: ''
+      },
+      pageNo: that.data.pageNo,
+      pageSize: 20
+    }
+
+    request.getTransferList(transferParams).then(result => {
+      var res = result.data.result;
+
+      if (res.length == 0) {
+
+        wx.showToast({ title: '没有更多数据啦', icon: 'success', duration: 2000 });
+
+      } else {
+
+        res.objects.forEach((value, index) => { that.stampToTime(value); value.photoUrl = waterMarkFilter.waterMark(value.photoUrl); });
+
+        var tempData = res.objects;
+
+        var newData = [...(that.data.transferList), ...tempData];
+
+        that.setData({ transferList: newData })
+      }
+      //隐藏加载中
+      setTimeout(() => { wx.hideLoading() }, 2000)
+    });
+  },
+
+
+
+  onLoad: function () {
+    var that = this;
+    wx.showLoading({title: '加载中'});
+    var storageCurrentCity = wx.getStorageSync('currentCityItem');
+
+    //开始请求行业区域面积值（下拉框显示）
+    industryData.getIndustry().then(industry => {
+      that.setData({
+        industries: industry.bigIndustryData,
+        smallIndustry: industry.smallIndustryData
+      })
+    });
+
+
+
+    //区域列表数据请求
+    if (storageCurrentCity) {
+      districtOfCity.districtsOfCity(storageCurrentCity.code).then(cityMatchesDistrict => {
+        that.setData({
+          locations: cityMatchesDistrict.bigDistrict,
+          smallLocations: cityMatchesDistrict.smallDistrict
+        })
+      })
+    }else{
+      district.getDistrict().then(location=>{
+        return currentCity.getCurrentCity()
+      }).then(res=>{
+        return cityIdByNameFilter.cityIdFunc(res)
+      }).then(currentCityItem => { 
+        that.setData({
+          currentCityItem: currentCityItem
+        })
+        return districtOfCity.districtsOfCity(currentCityItem.code) })
+      .then(cityMatchesDistrict => {
+        that.setData({
+          locations: cityMatchesDistrict.bigDistrict,
+          smallLocations: cityMatchesDistrict.smallDistrict
+        })
+      })
+    }
+
+    //面积列表数据
+    that.setData({ area: constant.areaData })
+
+
+
+    //请求前获取当前城市
+    if (storageCurrentCity) {
+      that.setData({
+        currentCityItem: { code: storageCurrentCity.code, name: storageCurrentCity.name }
+      })
+      initTransferList();
+    }
+
+
+
+
+    //请求列表数据
+    function initTransferList(){
+      var transferParams = {
+        query: { keyword: '', cityId: that.data.currentCityItem.code, districtId: null, industryId: null, minArea: null, maxArea: null, minRent: null, maxRent: null, matchSuitableIndustry: '', hasPhoto: '', isBusiness: '', canEmptyTransfer: '' },
+        pageNo: 0,
+        pageSize: 20
+      }
+
+      wx.showLoading({ title: '加载中', });
+
+      request.getTransferList(transferParams).then(result => {
+        var res = result.data.result;
+        if (res.totalCount == 0) {
+
+          //隐藏加载中
+          setTimeout(() => {
+            wx.hideLoading();
+            that.setData({ transferList: res.objects, noData: false })
+          }, 10)
+
+        } else {
+          res.objects.forEach((value, index) => { value.photoUrl = waterMarkFilter.waterMark(value.photoUrl); that.stampToTime(value); });
+
+          that.setData({ transferList: res.objects, noData: true })
+        }
+
+        //隐藏加载中
+        setTimeout(() => { wx.hideLoading() }, 2000)
+      });
+    }
+
+
+
+
+
+    //获取设备高度
+    var tempHeight = 0;
+    wx.getSystemInfo({
+      success: function (res) {
+        tempHeight = res.windowHeight;
+      }
+    })
+
+    this.setData({
+      windowHeight: tempHeight - 51    //有一个头部高度
+    })
+    
+    this.setData({
+      logs: (wx.getStorageSync('logs') || []).map(function (log) {
+        return stampTimeFilter.formatTime(new Date(log))
+      })
+    })
+  }
+})

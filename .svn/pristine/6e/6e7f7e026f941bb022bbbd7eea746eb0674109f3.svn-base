@@ -1,0 +1,400 @@
+/**index.wxss**/
+
+page {
+  background: #f0f0f0;
+}
+
+.bg-style {
+  width: 100%;
+  height: 233px;
+}
+
+.main-func {
+  width: 100%;
+  /*height: 233px;*/
+  position: relative;
+  background-color: white;
+}
+
+.logo-style {
+  width: 110px;
+  height: 71px;
+  /*margin-left: 134px;*/
+  left: 35%;
+  position: absolute;
+  top: 0px;
+  z-index: 999;
+}
+
+.func-module {
+  width: 100%;
+  position: absolute;
+  top: 71px;
+}
+
+.navigator-block {
+  display: inline-block;
+  width: 50%;
+  text-align:center;
+}
+
+.transfer-func {
+  display: inline-block;
+  /*width: 187px;*/
+  width: 100%;
+  /*width: 187px;*/
+  /*height: 121px;*/
+}
+
+.siting-func {
+  display: inline-block;
+  width: 100%;
+  /*width: 187px;*/
+  /*height: 121px;*/
+}
+
+.module {
+  /*width: 187px;*/
+  width: 100%;
+  /*height: 121px;*/
+  position: relative;
+  text-align: center;
+}
+
+.transfer-img {
+  /*width: 187px;*/
+  width: 100%;
+  height: 121px;
+}
+
+.siting-img {
+  /*width: 187px;*/
+  width: 100%;
+  height: 121px;
+}
+
+.tranfer-title {
+  right: 28%;
+  color: white;
+  font-size: 0.8rem;
+  position: absolute;
+  bottom: 2px;
+}
+
+.siting-title {
+  left: 28%;
+  color: white;
+  font-size: 0.8rem;
+  position: absolute;
+  bottom: 2px;
+}
+
+/*城市切换*/
+
+.city-selector {
+  display: inline-block;
+}
+
+.city-location {
+  text-align: center;
+  background-color: white;
+}
+
+.city-picker {
+}
+
+.city-location .city_change {
+  /*width: 160rpx;
+  height: 60rpx;*/
+  display: inline-block;
+  border-radius: 17px;
+  font-size: 0.8rem;
+  background-color: #0072ca;
+  color: white;
+  text-align: center;
+  vertical-align: middle;
+  padding: 4px 37px 3px 17px;
+  position: relative;
+}
+
+.city-location .city_change::after {
+  content: " ";
+  display: inline-block;
+  height: 6px;
+  width: 6px;
+  border-width: 0 2px 2px 0;
+  border-color: #fff;
+  border-style: solid;
+  -webkit-transform: matrix(0.71, 0.71, -.71, 0.71, 0, 0);
+  transform: matrix(0.71, 0.71, -.71, 0.71, 0, 0);
+  top: -2px;
+  position: absolute;
+  top: 50%;
+  left: auto;
+  right: 15px;
+  margin-top: -5px;
+}
+
+.left-line, .right-line {
+  border-top: 1px solid #b4b4b4;
+  border-color: #ccc;
+  display: inline-block;
+  width: 32px;
+  position: relative;
+  vertical-align: middle;
+}
+
+.need-info {
+  height: 30px;
+  overflow: hidden;
+}
+
+.need-info .info {
+  display: inline-block;
+  margin: 0 12px;
+  font-size: 0.67rem;
+  color: #a2a2a2;
+}
+
+.need-info .info-item {
+  height: 30px;
+  line-height: 30px;
+}
+
+/*最新信息*/
+
+.between-gap-18 {
+  margin-top: 9px;
+}
+
+.lastest-info {
+  padding-top: 10px;
+  background-color: white;
+}
+
+.lastest-info-nav {
+  position: relative;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.info-tag {
+  height: 16px;
+  width: 4px;
+  display: inline-block;
+  background-color: #ff3a55;
+}
+
+.lastest-info-title {
+  display: inline-block;
+  margin-left: 15px;
+  color: #424242;
+}
+
+.see-more {
+  display: inline-block;
+  position: absolute;
+  right: 37px;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.see-more::after {
+  content: " ";
+  display: inline-block;
+  height: 6px;
+  width: 6px;
+  border-width: 2px 2px 0 0;
+  border-color: #666;
+  border-style: solid;
+  -webkit-transform: matrix(0.71, 0.71, -.71, 0.71, 0, 0);
+  transform: matrix(0.71, 0.71, -.71, 0.71, 0, 0);
+  top: -2px;
+  position: absolute;
+  top: 50%;
+  left: auto;
+  right: -12px;
+  margin-top: -4px;
+}
+
+.lastest-info-list {
+  padding: 0 20px;
+}
+
+.lastest-info-list .siting-text-block .siting-info-text-title {
+  font-weight: 800;
+}
+
+.scroll-container {
+  white-space: nowrap;
+}
+
+.info-block {
+  margin-right: 12px;
+  display: inline-block;
+  margin-bottom: 12px;
+  background: #fff;
+}
+
+.image-block {
+  display: inline-block;
+  position: relative;
+  width: 215px;
+  height: 145px;
+}
+
+.rent-tag {
+  position: absolute;
+  left: 5px;
+  width: 16px;
+  height: 21px;
+}
+
+.info-image {
+  width: 215px;
+  height: 145px;
+}
+
+.time-info {
+  text-align: center;
+  position: absolute;
+  bottom: 5px;
+  right: 0px;
+  width: 50px;
+  height: 20px;
+  font-size: 0.59rem;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 12px 0px 0px 12px;
+  line-height: 20px;
+}
+
+.text-block {
+  color: #424242;
+}
+
+.transfer-text-block {
+  width: 215px;
+}
+
+.siting-text-block {
+  width: 100%;
+  margin: 12px 0px;
+  display: inline-block;
+}
+
+.info-text-title {
+  display: inline-block;
+  font-size: 0.92rem;
+}
+
+.transfer-info-text-title, .siting-info-text-title {
+  max-width: 90%;
+  /*height: 30px;*/
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 1;
+  white-space: nowrap;
+  word-wrap: break-word;
+  vertical-align: middle;
+}
+
+.fee-image {
+  display: inline-block;
+  width: 12px;
+  height: 14px;
+  margin-left: 5px;
+  position: relative;
+  top: 2px;
+}
+
+.detail, .main-location {
+  /*width: 100%;
+  overflow: scroll;
+  text-overflow: ellipsis;*/
+  font-size: 0.71rem;
+  position: relative;
+  color: #666;
+}
+.main-location {
+  width: 100%;
+  overflow: hidden;
+  -webkit-line-clamp: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.area-info {
+  color: #ff3a55;
+  display: inline-block;
+  margin-right: 15px;
+}
+
+.location-info, .shop-sort {
+  display: inline-block;
+  margin-right: 15px;
+}
+
+.locations {
+  margin-right: 15px;
+  display: inline-block;
+}
+
+.fee-info {
+  display: inline-block;
+  margin-right: 15px;
+}
+ .small-detail{
+   max-width:33%;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   word-break: normal;
+   white-space: nowrap; 
+ }
+
+.info-block-item {
+  display: block;
+  /*height: 95px;*/
+  padding: 0px 0px;
+  border-bottom: 1px solid #f0f0f0;
+  /*padding-top: 12px;*/
+  background: #fff;
+}
+
+.title-tag {
+  display: inline-block;
+}
+
+.item-time {
+  position: absolute;
+  right: 10px;
+  display: inline-block;
+  color: #b4b4b4;
+}
+
+.line-divider {
+  width: 90%;
+  margin: 0 auto;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.see-all-text {
+  width: 100%;
+  height: 52px;
+  color: #3596de;
+  text-align: center;
+  line-height: 52px;
+  font-size: 0.9rem;
+  background: #fff;
+}
+
+.noTransferData, .noSitingData {
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  font-size: 28px;
+  color: #888;
+  /*margin-top: 200px;*/
+}
+
+

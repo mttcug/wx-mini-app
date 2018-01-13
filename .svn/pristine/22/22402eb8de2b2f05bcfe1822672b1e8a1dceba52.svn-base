@@ -1,0 +1,16 @@
+var districtData = require("../baseData/district.js");
+
+function cityIdFunc(){
+  //判断城市数据是否被缓存，有责用，无则请求数据
+  var cities = sessionStorage.getItem("cities");
+  if(cities){
+    var cityItems=JSON.parse(cities);
+  }else{
+    districtData.getDistrict().then(res=>{
+      console.log("res:",res);
+    })
+  }
+}
+module.exports={
+  cityIdFunc: cityIdFunc
+}

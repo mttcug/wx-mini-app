@@ -1,0 +1,114 @@
+<view class="page {{pageScroll ?  '':'forbiddenScroll' }}">
+
+  <!--tab内容-->
+  <view class="weui-tab">
+    <view class="weui-navbar">
+      <block wx:for="{{tabs}}" wx:key="*this" class="tabs-inline-block">
+        <view id="{{index}}" class="weui-navbar__item {{activeIndex == index ? 'weui-bar__item_on' : ''}}" bindtap="tabClick">
+          <view class="weui-navbar__title {{ listShow && activeIndex==index?  'up-triangle' : ' down-triangle '}}">{{item}}</view>
+        </view>
+      </block>
+      <!--<view class="weui-navbar__slider" style="left: {{sliderLeft}}px; transform: translateX({{sliderOffset}}px); -webkit-transform: translateX({{sliderOffset}}px);"></view>-->
+    </view>
+    <view class="weui-tab__panel" style="border:1px solid #e6e6e6;" hidden="{{!listShow}}">
+      <!--行业下拉选项-->
+      <view class="weui-tab__content-industry" hidden="{{activeIndex != 0}}">
+        <!--一级,第一级用index做索引-->
+        <view class="weui-navbar-industry">
+          <block class="industry-item" wx:for="{{industries}}" wx:key="*this">
+            <view id="{{index}}" data-index="{{item.code}}" class="weui-navbar__item-industry {{activeIndustryIndex == index ? 'weui-bar__item_on' : ''}}" bindtap="selectIndustry">
+              <view class="weui-navbar__title-industry {{activeIndustryIndex == index ? 'list-right-border white-backgronud' : ''}}">{{item.name}}</view>
+            </view>
+          </block>
+        </view>
+      
+        <!--二级,第一级用code做索引-->
+        <view class="weui-tab__panel-industry">
+          <view class="scrollItem" wx:for="{{smallIndustry}}" wx:key="code" wx:for-index="industryIndex" wx:for-item="industryItem">
+            <view class="weui-tab__content-smallIndustry" hidden="{{activeIndustryIndex != industryIndex}}">
+              <!--小行业-->
+              <view class="weui-navbar-small-industry">
+                <block wx:for="{{industryItem}}" wx:key="*this" wx:for-index="smallIndustryIndex" wx:for-item="smallIndustryItem">
+                  <view id="{{smallIndustryItem.code}}"  data-industry="{{smallIndustryItem.code}}" class="weui-navbar__item-small-industry  border-left {{activeSmallSelected == smallIndustryItem.code ? 'weui-bar__item_on' : ''}}" bindtap="selectSmallIndustry">
+                    <view class="weui-navbar__title-small-industry">{{smallIndustryItem.name}}</view>
+                    <image wx:if="{{activeSmallSelected == smallIndustryItem.code}}" src="../../images/list/checked_tag.png" class="checked-tag"></image>
+                  </view>
+                </block>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+      <!--区域下拉选项-->
+      <view class="weui-tab__content-location" hidden="{{activeIndex != 1}}">
+        <view class="weui-navbar-location">
+          <block class="location-item" wx:key="*this" wx:for="{{locations}}">
+            <view id="{{index}}" data-index="{{item.code}}" class="weui-navbar__item-location {{activeLocationIndex == index ? 'weui-bar__item_on' : ''}}" bindtap="selectLocation">
+              <view class="weui-navbar__title-location  border-right  {{activeLocationIndex == index ? 'list-right-border white-backgronud' : ''}}">{{item.name}}</view>
+            </view>
+          </block>
+        </view>
+        <view class="weui-tab__panel-location">
+          <view class="scrollItem" wx:for="{{smallLocations}}" wx:key="code" wx:for-index="locationIndex" wx:for-item="locationItem">
+            <view class="weui-tab__content-smallLocation" hidden="{{activeLocationIndex != locationIndex}}">
+              <!--区域-->
+              <view class="weui-navbar-small-location">
+                <block wx:for="{{locationItem}}" wx:key="code" wx:for-index="smallLocationIndex" wx:for-item="smallLocationItem">
+                  <view id="{{smallLocationItem.code}}" data-location="{{smallLocationItem.code}}" class="weui-navbar__item-small-location {{activeSmallLocationSelected == smallLocationItem.code ? 'weui-bar__item_on' : ''}}" bindtap="selectSmallLocation">
+                    <view class="weui-navbar__title-small-location">{{smallLocationItem.name}}</view>
+                    <image wx:if="{{activeSmallLocationSelected == smallLocationItem.code}}" src="../../images/list/checked_tag.png" class="checked-tag"></image>
+                  </view>
+                </block>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+      <!--面积下拉选项-->
+      <view class="weui-tab__content-area" hidden="{{activeIndex != 2}}">
+        <view class="weui-navbar-area">
+          <block wx:key="*this" wx:for="{{area}}">
+            <view id="{{index}}" data-minArea='{{item.min}}' data-maxArea='{{item.max}}'  class="weui-navbar__item-area {{activeAreaSelected == index ? 'weui-bar__item_on' : ''}}" bindtap="selectArea">
+              <view class="weui-navbar__title-area {{activeAreaSelected == index ? 'list-right-border white-backgronud' : ''}}">{{item.name}}</view>
+              <image wx:if="{{activeAreaSelected == index}}" src="../../images/list/checked_tag.png" class="checked-tag"></image>
+            </view>
+          </block>
+        </view>
+      </view>
+
+    </view>
+  </view>
+  <view wx:if="{{listShow}}" class="mask" bindtap="tabClick">
+  </view>
+
+  <!--列表内容-->
+  <scroll-view scroll-y bindscrolltolower="loadData" class="transfer-list" style="height:{{windowHeight}}px;">
+    <view class="list-container">
+      <navigator class="info-block-item" url="../transfer-detail/transfer-detail?oppoId={{item.id}}"  wx:key="*this" wx:for="{{transferList}}">
+        <view class="content-container">
+          <view class="img-block">
+            <image mode="aspectFill" wx:if="{{item.photoUrl!=''}}" class="item-image" src="{{item.photoUrl}}"></image>
+            <image mode="aspectFill" wx:if="{{item.photoUrl==''}}" class="item-image" src="../../images/list/url_null.png"></image>
+          </view>
+          <view class="text-block">
+            <view class="title-block">
+              <view class="info-text-title">{{item.title}}</view>
+              <image wx:if="{{item.hasCharged}}" class="fee-image" src="../../images/index/fee.png"></image>
+            </view>
+            <view class="detail">
+              <view wx:if="{{item.industryName !=''}}" class="operate-sort">{{item.industryName}}</view>
+              <view class="locations">{{item.districtName}}</view>
+            </view>
+            <view class="detail  time-line">
+              <view class="area-info">{{item.area}}平米</view>
+              <view wx:if="{{item.transferFee>0 && item.negotiable==false}}" class="transfer-fee">转让费{{item.transferFee/1000000}}万元</view>
+              <view wx:if="{{item.negotiable==true }}" class="transfer-fee">转让费面议</view>
+              <view class="info-time">{{item.updateTime}}</view>
+            </view>
+          </view>
+        </view>
+      </navigator>
+    </view>
+    <view class="noData" hidden="{{noData}}">暂无数据</view>
+  </scroll-view>
+</view>

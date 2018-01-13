@@ -1,0 +1,59 @@
+<view wx:if="{{loadCompleted}}" class="page">
+  <!--搜索框-->
+  <view class="page__hd">
+    <view class="weui-search-bar">
+      <view class="weui-search-bar__form">
+        <view class="weui-search-bar__box">
+          <icon class="weui-icon-search_in-box" type="search" size="14"></icon>
+          <input type="text" class="weui-search-bar__input" placeholder="请输入城市名或拼音" value="{{inputVal}}" focus="{{inputShowed}}" bindinput="inputTyping" />
+          <view class="weui-icon-clear" wx:if="{{inputVal.length > 0}}" bindtap="clearInput">
+            <icon type="clear" size="14"></icon>
+          </view>
+        </view>
+      </view>
+      <view class="weui-search-bar__cancel-btn" hidden="{{!inputShowed}}" bindtap="hideInput">取消</view>
+    </view>
+  </view>
+  <!--城市列表-->
+  <view class="cities-list"  hidden="{{matchedCityList.length > 0 }}">
+    <scroll-view scroll-y="true" scroll-into-view="{{toLetter}}"  scroll-with-animation="true" style="height: {{scrollHeight}}px;">
+      <view class="block" id="TOP">
+        <!--当前城市-->
+        <view class="city-block">
+          <view class="title">当前城市</view>
+          <view class="current-city" data-cityName="{{currentCity.name}}" data-cityId="{{currentCity.code}}" bindtap="selectThisCity">{{currentCity.name}}</view>
+        </view>
+        <!--热门城市-->
+        <view class="city-block">
+          <view class="title">热门城市</view>
+          <view class="hot-cities">
+            <view class="city" data-cityName="{{item.name}}" data-cityId="{{item.code}}"  wx:key="*this" data-index="{{index}}" wx:for="{{hotCities}}" bindtap="selectThisCity">{{item.name}}</view>
+          </view>
+        </view>
+      </view>
+      <!--字母列表城市-->
+
+      <view class="word-list-item" id="{{item.name}}" wx:key="name" wx:for="{{citiesList}}">
+        <view class="word">{{item.name}}</view>
+        <view class="list" wx:key="*this" wx:for="{{item.itemArr}}" wx:for-index="cityItemIndex" wx:for-item="cityItem">
+          <view class="city" data-cityName="{{cityItem.name}}" data-cityId="{{cityItem.code}}"  bindtap="selectThisCity">{{cityItem.name}}</view>
+        </view>
+      </view>
+
+    </scroll-view>
+  </view>
+  <!--侧边字母列表-->
+  <view class="words-list" hidden="{{matchedCityList.length > 0 }}">
+    <view class="word-item" data-letter="TOP" bindtap="scrollToLetter">↑</view>
+    <view class="word-item {{ selectedLetter ==item.name ? 'select-blue' : ''}}" wx:key="*this" data-letter="{{item.name}}" wx:for="{{citiesList}}" bindtap="scrollToLetter">{{item.name}}</view>
+  </view>
+
+  <!--匹配城市-->
+  <view class="matcheditemList">
+    <view class="word-list-item" id="{{item.name}}" wx:key="*this" wx:for="{{matchedCityList}}">      
+        <view class="list" >
+          <view class="city" data-cityName="{{item.name}}" data-cityId="{{item.code}}"  bindtap="selectThisCity">{{item.name}}</view>
+        </view>
+      </view>
+  </view>
+</view>

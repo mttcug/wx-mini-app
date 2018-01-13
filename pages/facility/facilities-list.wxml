@@ -1,0 +1,10 @@
+<view class="page">
+  <view class="fascilities">
+    <view class="list-item">
+      <view class="item" wx:key="*this" wx:for="{{hasFacilities}}">
+        <view class="title">{{item.title}}</view>
+        <image src="{{item.imageUrl}}" class="img-tag"></image>
+      </view> 
+      </view> 
+  </view>
+</view>

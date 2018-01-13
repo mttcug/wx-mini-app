@@ -1,0 +1,212 @@
+//index.js
+//获取应用实例
+
+var promise = require('../../js/libs/es6-promise.min.js');
+var district = require('../../js/service/district.js');
+var currentCity = require('../../js/service/currentCity.js');
+var cityIdByNameFilter = require('../../js/filter/cityIdByNameFilter.js');
+var waterMarkFilter = require('../../js/filter/waterMarkFilter.js');
+var stampTimeFilter = require('../../js/filter/stampTimeFilter.js');
+var request = require('../../js/service/httpReq.js');
+
+
+var app = getApp();
+Page({
+  data: {
+    // 百度地图
+    markers: [],
+    latitude: '',
+    longitude: '',
+    rgcData: {},
+    //窗口高度计算，scroll-view需要
+    windowHeight: 600,
+
+    //当前城市相关   
+    currentCityItem: '',
+    //动画参数
+    animation: {},
+    //列表数据      
+    transferListDataNum: 0,
+    transferListData: [],
+    sitingListDataNum: 0,
+    sitingListData: [],
+    //判断数据是否加载完成
+    loadCompleted: false
+  },
+  onShareAppMessage: function () {
+    var obj = {
+      title:'铺铺旺一站式店铺经营服务商，提供找店、招聘、培训、经营、揽客、转让、招商服务。',
+      path: 'pages/index/index',
+      success: function (res) {        // 分享成功     
+        wx.showToast({
+          title: '成功',
+          icon: 'success',
+          duration: 2000
+        })
+      }, fail: function (res) {        // 分享失败    
+        wx.showToast({
+          title: '失败',
+          icon: 'fail',
+          duration: 2000
+        })
+      }
+    }
+    return obj;
+  },
+ 
+  /**
+   *跳转到城市选择页面
+   */
+  toSelectCity: function () {
+    wx.redirectTo({
+      url: "../city/cities-list"
+    })
+  },
+
+
+
+
+
+  /**
+   * 首页开始没有标题，当滚动到100时添加导航栏标题
+   */
+  scroll: function (e) {
+    if (e.detail.scrollTop >= 100) {
+      wx.setNavigationBarTitle({ title: '铺铺旺' })
+    } else {
+      wx.setNavigationBarTitle({
+        title: ''
+      })
+    }
+  },
+
+
+
+/**
+ * onload函数
+ */
+
+  onLoad: function (option) {
+
+    //清除掉所有缓存
+    // wx.clearStorageSync();
+    var that = this;
+    that.setData({ loadCompleted: false });
+    wx.showLoading({ title: '加载中', });
+
+
+
+
+
+   
+    /**
+     *定位当前城市
+     * 从选择城市页面跳转过来(页面传参option)
+     */
+    if (option.cityName) {
+      that.setData({ 
+        currentCityItem: { code: option.cityId, name: option.cityName } 
+        });
+      transferListFunc();
+      sitingListFunc();
+
+      wx.setStorageSync("currentCityItem", that.data.currentCityItem);
+
+    } else {    
+      currentCity.getCurrentCity().then(res => {
+        cityIdByNameFilter.cityIdFunc(res).then(result => {
+          that.setData({ currentCityItem: result });
+          transferListFunc();
+          sitingListFunc();
+
+          wx.setStorageSync("currentCityItem", that.data.currentCityItem);
+        });
+      })
+    }
+
+
+
+    
+    /**
+     * 获取转店列表
+     */
+    function transferListFunc(){
+      var transferParams = {
+        query: { keyword: '', cityId: that.data.currentCityItem.code, districtId: null, industryId: null, minArea: null, maxArea: null, minRent: null, maxRent: null, matchSuitableIndustry: '', hasPhoto: '', isBusiness: '', canEmptyTransfer: '' },
+        pageNo: 0,
+        pageSize: 5
+      }
+      request.getTransferList(transferParams).then(res => {
+        var result=res.data.result;
+
+        result.objects.forEach((value, index) => { value.photoUrl = waterMarkFilter.waterMark(value.photoUrl); stampToTime(value); });
+
+        
+        that.setData({
+          transferListDataNum: result.totalCount,
+          transferListData: result.objects
+        })
+      });
+    }
+
+
+    
+    /**
+     * 获取找店列表
+     */
+    function sitingListFunc() {
+      var sitingParams = {
+        query: { keyword: '', cityId: that.data.currentCityItem.code, districtId: null, industryId: null, minArea: null, maxArea: null, minRent: null, maxRent: null },
+        pageNo: 0,
+        pageSize: 3
+      }
+      request.getSitingList(sitingParams).then(res => {
+        var result = res.data.result;
+
+        result.objects.forEach((value, index) => { stampToTime(value); });
+
+
+        that.setData({
+          sitingListDataNum: result.totalCount,
+          sitingListData: result.objects
+        })
+        
+        that.setData({ loadCompleted: true });
+        wx.hideLoading();
+      });
+    }
+
+
+    
+    /**
+     * 时间转换功能
+     */
+    function stampToTime(value) {
+      var realtime = new Date(parseInt(value.updateTime));
+      value.updateTime = stampTimeFilter.stampTime(realtime);
+    }
+
+
+    
+
+
+
+
+
+    /**
+     * 获取设备高度
+     */
+    var tempHeight = 0;
+
+    wx.getSystemInfo({
+      success: function (res) {
+        tempHeight = res.windowHeight;
+      }
+    })
+
+    this.setData({
+      windowHeight: tempHeight
+    })
+
+  }
+})

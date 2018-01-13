@@ -1,0 +1,19 @@
+{
+    "pages": [
+        "pages/index/index",
+        "pages/transfer-list/transfer-list",
+        "pages/siting-list/siting-list",
+        "pages/transfer-detail/transfer-detail",
+        "pages/siting-detail/siting-detail",
+        "pages/city/cities-list",
+        "pages/facility/facilities-list",
+        "pages/chat/chat"
+    ],
+    "window": {
+        "navigationBarBackgroundColor": "#ff3a55",
+        "navigationBarTextStyle": "white",
+        "navigationBarTitleText": "",
+        "backgroundColor": "#eeeeee",
+        "backgroundTextStyle": "light"
+    }
+}

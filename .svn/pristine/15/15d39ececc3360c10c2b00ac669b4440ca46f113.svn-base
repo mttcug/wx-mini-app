@@ -1,0 +1,54 @@
+var promise = require('../../js/libs/es6-promise.min.js');
+var constant = require("../../js/commonjs/constant");
+var industryData = require('../../js/service/industry.js');
+var district = require('../../js/service/district.js');
+
+
+
+//获取选择城市的城市列表
+function letterCityList() {
+  var allExistCitiesList = [];
+  return new Promise((resolve, reject) => {
+    constant.letters.forEach(function (value, index) {
+      var tempContainer = {};
+      tempContainer.name = value;
+      tempContainer.itemArr = [];
+
+      JSON.parse(wx.getStorageSync('districtData')).city.forEach(function (cityValue, cityIndex) {
+        var firstLetter = cityValue.pinyin.substr(0, 1).toUpperCase();
+        if (firstLetter == value.toString()) {
+          tempContainer.itemArr.push(cityValue);
+        }
+      });
+
+      if (tempContainer.itemArr && tempContainer.itemArr.length && tempContainer.itemArr.length > 0) {
+        allExistCitiesList.push(tempContainer);
+      }
+      resolve(allExistCitiesList);
+    })
+  })
+}
+
+// module.exports.letterCityList = letterCityList;
+
+//搜索城市列表输入相关的列表项
+function searchCityRelative(val) {
+  if (val.toString() == '') {
+    return '';
+  }
+  var length = val.toString().length;
+  var container = [];
+  var regex = /\w/;
+  var city = JSON.parse(wx.getStorageSync("districtData")).city
+  city.forEach(function (value, index) { console.log("city:", value, value.name, index); })
+  city.forEach(function (value, index) {
+    (regex.test(val) && value.pinyin.substr(0, length) == val) ? container.push(value) : '';
+    (!regex.test(val) && value.name.toString().substr(0, length) == val) ? container.push(value) : '';
+  })
+  return container;
+}
+
+module.exports={
+  letterCityList: letterCityList,
+  searchCityRelative: searchCityRelative
+}

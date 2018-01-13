@@ -1,0 +1,111 @@
+<!--index.wxml-->
+<scroll-view wx:if="{{loadCompleted}}" scroll-y style="height: {{windowHeight}}px;" bindscroll="scroll" class="page">
+  <!--head-->
+  <view class="main-func page-hd">
+    <image class="logo-style" src="../../images/index/logo.png"></image>
+    <view class="func-module">
+    <view class="navigator-block">
+      <navigator url="../transfer-list/transfer-list" class="transfer-func">
+        <view class="module">
+          <image mode="widthFix" class="transfer-img" src="../../images/index/transferF.png"></image>
+          <view class="tranfer-title">转店招租</view>
+        </view>
+      </navigator>
+      </view>
+      <view class="navigator-block">
+      <navigator url="../siting-list/siting-list" class="siting-func">
+        <view class="module">
+          <image mode="widthFix" class="siting-img" src="../../images/index/sitingF.png"></image>
+          <view class="siting-title">开店选址</view>
+        </view>
+      </navigator>
+      </view>
+    </view>
+    <image class="bg-style" src="../../images/index/main_bg.png"></image>
+  </view>
+  <!--切换城市-->
+  <view class="city-location">
+    <view class="city-picker"  wx:if="{{currentCityItem}}">
+      <view  bindtap="toSelectCity" class="city-selector">
+        <view class="city_change">{{currentCityItem.name}}</view>    
+      </view>
+    </view>
+    <view wx:if="{{loadCompleted}}" class="need-info">
+      <view class="info-item"> 
+        <view class="left-line"></view>
+        <view class="info">{{transferListDataNum}}人正在转店、{{sitingListDataNum}}人正在找店</view>
+        <view class="right-line"></view>
+      </view>
+    </view>
+  </view>
+
+  <!--最新转店信息展示-->
+  <view class="lastest-info">
+    <navigator class="lastest-info-nav" url="../transfer-list/transfer-list">
+      <view class="info-tag"></view>
+      <view class="lastest-info-title">最新转店</view>
+      <view class="see-more" wx:if="{{transferListDataNum > 5}}">
+        <view>查看全部</view>
+      </view>
+    </navigator>
+    <view class="lastest-info-list">
+      <view class="section section_gap">
+        <scroll-view class="scroll-container scroll-view_H" scroll-x>
+          <navigator wx:if="{{index<5}}" class="info-block" url="../transfer-detail/transfer-detail?oppoId={{item.id}}" wx:for="{{transferListData}}" wx:key="id">
+            <view class="image-block">
+              <image wx:if="{{item.type==2}}" class="rent-tag" src="../../images/index/rent.png"></image>
+              <image wx:if="{{item.photoUrl != ''}}" class="info-image" src="{{item.photoUrl}}"></image><image wx:if="{{item.photoUrl == ''}}" class="info-image" src="../../images/common/default.png"></image>
+              <view class="time-info">{{item.updateTime}}</view>
+            </view>
+            <view class="text-block transfer-text-block">
+              <view class="info-text-title transfer-info-text-title">{{item.title}}</view>
+              <image wx:if="{{item.hasCharged}}" class="fee-image" src="../../images/index/fee.png"></image>
+              <view class="detail">
+                <view wx:if="{{item.area > 0}}" class="area-info small-detail">{{item.area}}平方米</view>
+                <view class="location-info  small-detail">{{item.districtName}}</view>
+                <view wx:if="{{item.transferFee > 0 && item.negotiable==false }}" class="fee-info  small-detail">转让费{{item.transferFee/1000000}}万元</view>
+                <view wx:if="{{item.negotiable==true }}" class="fee-info  small-detail">转让费面议</view>
+              </view>
+            </view>
+          </navigator>
+        </scroll-view>
+      </view>
+      <view class="noTransferData" hidden="{{transferListDataNum > 0}}">暂无数据</view>
+    </view>
+  </view>
+
+
+
+  <!--最新找店信息展示-->
+  <view class="lastest-info  between-gap-18">
+    <navigator class="lastest-info-nav" url="../siting-list/siting-list">
+      <view class="info-tag"></view>
+      <view class="lastest-info-title">最新找店</view>
+      <view class="see-more" wx:if="{{sitingListDataNum > 3}}">
+        <view>查看全部</view>
+      </view>
+    </navigator>
+    <view class="line-divider"></view>
+    <view class="lastest-info-list">
+      <navigator wx:if="{{index < 3}}" class="info-block-item" url="../siting-detail/siting-detail?oppoId={{item.id}}" wx:for="{{sitingListData}}" wx:key="id">
+        <view class="text-block siting-text-block">
+          <view class="info-text-title siting-info-text-title">{{item.title}}</view>
+          <image wx:if="{{item.hasCharged}}" class="fee-image" src="../../images/index/fee.png"></image>
+          <view class="main-location">
+            <view class="title-tag">期望区域：</view>
+            <view class="locations"  wx:key="*this" wx:for="{{item.districtName}}" wx:for-index="locationIndex" wx:for-item="locationItem">{{locationItem}}</view>
+          </view>
+          <view class="detail">
+            <view class="area-info">{{item.minArea}}-{{item.maxArea}}平米</view>
+            <view class="shop-sort">{{item.sort}}</view>
+            <view class="item-time">{{item.updateTime}}</view>
+          </view>
+        </view>
+      </navigator>
+      <navigator wx:if="{{sitingListDataNum > 3}}" class="see-all-siting-info" url="../siting-list/siting-list">
+        <view class="see-all-text">查看全部找店</view>
+      </navigator>
+      <view class="noSitingData"  hidden="{{sitingListDataNum > 0}}">暂无数据</view>
+    </view>
+  </view>
+</scroll-view>

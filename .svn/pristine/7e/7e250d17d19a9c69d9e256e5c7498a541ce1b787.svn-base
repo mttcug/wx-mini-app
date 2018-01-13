@@ -1,0 +1,150 @@
+var promise = require('../libs/es6-promise/es6-promise.min.js');
+var baseData = require('../service/baseDataService.js');
+
+
+
+//行业
+function industryNameFilter(arg) { //输入的是单个值还是数组
+  if (typeof (arg) == "number") {
+    if (arg == 0) {
+      return '';
+    } else {
+      if (baseData.ALLINDUSTRYDATA.length > 0){        
+        var item = baseData.ALLINDUSTRYDATA.find(item => item.code.toString() === arg.toString());
+        return item.name;
+      }else{
+        baseData.getIndustryList().then(industry=>{
+          var item = industry.ALLINDUSTRYDATA.find(item => item.code.toString() === arg.toString());
+          return item.name;
+        })
+      }
+    }
+  }
+  if (typeof (arg) == "object") {
+    var container = [];
+    for (var value of arg) {
+      if (baseData.ALLINDUSTRYDATA) {
+        var item = baseData.ALLINDUSTRYDATA.find(item => item.code === value);
+        item ? container.push(item) :'';
+      }else{
+        baseData.getIndustryList().then(industry => {
+          var item = industry.ALLINDUSTRYDATA.find(item => item.code.toString() === arg.toString());
+          item ? container.push(item) : '';
+        })
+      }
+    }
+    return container;
+  }
+}
+
+
+
+//区域
+function districtNameFilter(arg) {
+  if (typeof (arg) == "number") {
+    if (arg == 0) {
+      return '';
+    } else {
+      var item = baseData.ALLLOCATIONDATA.find(item => item.code === arg);
+      return item ? item.name : '';
+    }
+  }
+  if (typeof (arg) == "object") {
+    var container = [];
+    for (var value of arg) {
+      var item = baseData.ALLLOCATIONDATA.find(item => item.code === value);
+      if (item != undefined) {
+        container.push(item);
+      }
+    }
+    return container;
+  }
+}
+
+//城市+区域+小区域
+function locationNameFilter(arg) {
+  if (typeof (arg) == "number") {
+    if (arg == 0) {
+      return '';
+    } else {
+      var city = wx.getStorageSync('city').find(item => item.code.toString() === arg.toString().substr(0, 4));
+      var district = wx.getStorageSync('districts').find(item => item.code.toString() === arg.toString().substr(0, 6));
+      var smallDistrict = wx.getStorageSync('smalldistricts').find(item => item.code.toString() === arg.toString().substr(0, 8));
+      var result = arg.toString().length == 6 ? city.name + district.name : city.name + district.name + smallDistrict.name;
+      return result ? result : '';
+    }
+  }
+  if (typeof (arg) == "object") {
+    var container = [];
+    var i = 1;
+
+    for (var value of arg) {
+
+      var city = wx.getStorageSync('city').find(item => item.code.toString() === value.toString().substr(0, 4));
+      var district = value.toString().length >= 6 ? wx.getStorageSync('districts').find(item => item.code.toString() === value.toString().substr(0, 6)) : '';
+      var smallDistrict = value.toString().length == 8 ? wx.getStorageSync('smalldistricts').find(item => item.code.toString() === value.toString().substr(0, 8)) : '';
+     
+      if (value.toString().length < 6)
+        result = city.name;
+      else
+        result = value.toString().length == 6 ? city.name + district.name : city.name + district.name + smallDistrict.name;
+
+
+      if (result != undefined && result != '') {
+        container.push(result);
+      }
+    }
+    return container;
+  }
+}
+
+//地址 城市+区域+地址
+function address(arg, adress) {
+  var city = wx.getStorageSync('city').find(item => item.code.toString() === arg.toString().substr(0, 4));
+  var district = wx.getStorageSync('districts').find(item => item.code.toString() === arg.toString().substr(0, 6));
+  var address = arg.toString().length >= 6 ? city.name + district.name + adress : city.name + adress;
+  return address;
+}
+
+//图片加水印操作
+function waterMark(obj) {
+  if (typeof (obj) == "string") {
+    return obj != '' ? obj + "?x-oss-process=image/watermark,image_d2F0ZXJtYXJrMy5wbmc_eC1vc3MtcHJvY2Vzcz1pbWFnZS9yZXNpemUsUF8xMDA=,t_100,g_center,y_10,x_10" : '';
+  }
+  if (typeof (obj) == "object") {
+    obj.forEach((value, index) => {
+      value.url = value.url != '' ? value.url + "?x-oss-process=image/watermark,image_d2F0ZXJtYXJrMy5wbmc_eC1vc3MtcHJvY2Vzcz1pbWFnZS9yZXNpemUsUF8xMDA=,t_100,g_center,y_10,x_10" : '';
+    })
+    return obj;
+  }
+}
+
+//首选类型
+function firstType(code) {
+  var typeList = [{ code: 0, name: "全部" }, { code: 1, name: "店铺转让" }, { code: 2, name: "出租招商" }];
+  return typeList.find(item => item.code === code) ? typeList.find(item => item.code === code).name : '';
+}
+
+//租金单位
+function rentMeasure(code) {
+  var List = [{ code: 0, name: "元/月" }, { code: 1, name: "元/天" }, { code: 2, name: "万元/年" }, { code: 3, name: "元/平米*月" }, { code: 4, name: "元/平米*天" }];
+  return List.find(item => item.code === code) ? List.find(item => item.code === code).name : '';
+}
+
+//经营类型
+function operateType(code) {
+  var List = [{ code: 1, name: "个人" }, { code: 2, name: "加盟" }, { code: 3, name: "直营" }];
+  return List.find(item => item.code === code) ? List.find(item => item.code === code).name : '';
+}
+
+
+module.exports = {
+  industryNameFilter: industryNameFilter,
+  districtNameFilter: districtNameFilter,
+  locationNameFilter: locationNameFilter,
+  waterMark: waterMark,
+  address: address,
+  firstType: firstType,
+  rentMeasure: rentMeasure,
+  operateType: operateType
+}

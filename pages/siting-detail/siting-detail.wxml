@@ -1,0 +1,97 @@
+<view wx:if="{{loadCompleted}}" class="page"  style="height: {{pageContent}}px;">
+  <!--商铺信息-->
+  <view class="shop-info">
+    <view class="info-title">
+      {{shopDetail.title}}
+      <image wx:if="{{shopDetail.status==2}}" class="fee" src="../../images/common/fee.png"></image>
+    </view>
+    <view class="side-info">
+      <view class="left-line"></view>
+      <view class="info">店铺求租 编号:{{shopDetail.opportunityId}}</view>
+      <view class="right-line"></view>
+    </view>
+    <view class="main-info">
+      <view class="area">
+        <view class="title">期望面积</view>
+        <view class="data" wx:if="{{shopDetail.content.minArea > 0 && shopDetail.content.maxArea > 0}}">{{shopDetail.content.minArea}}-{{shopDetail.content.maxArea}}㎡</view>
+        <view class="data" wx:if="{{shopDetail.content.maxArea == 0 || shopDetail.content.maxArea== '' ||shopDetail.content.maxArea== undefined}}">不限</view>
+      </view>
+      <view class="rent-fee">
+        <view class="title"> 期望租金({{shopDetail.content.rentMeasure}})</view>
+        <view wx:if="{{shopDetail.content.maxRent > 0}}" class="data">{{shopDetail.content.minRent/100}}-{{shopDetail.content.maxRent/100}}</view>
+        <view wx:if="{{shopDetail.content.maxRent == 0 || shopDetail.content.maxRent=='' ||shopDetail.content.maxRent==undefined}}" class="data">面议</view>
+      </view>
+    </view>
+  </view>
+  <!--信息详情-->
+  <view class="info-detail">
+    <view class="item-detail">
+      <view wx:if="{{shopDetail.content.industryId}}" class="industry detail-sort">
+        <view class="title">求租行业</view>
+        <view class="items">{{shopDetail.content.industryId}}</view>
+      </view>
+      <view wx:if="{{shopDetail.content.city}}" class="location detail-sort">
+        <view class="title" style="letter-spacing:16rpx;">城 市</view>
+        <view class="items">{{shopDetail.content.city}}</view>
+      </view>
+      <view wx:if="{{shopDetail.content.districtIds}}" class="operate-state detail-sort">
+        <view class="title">期望区域</view>
+        <view class="districts-block">
+          <view class="items" wx:key="*this" wx:for="{{shopDetail.content.districtIds}}">{{item}}</view>
+        </view>
+      </view>
+      <view class="divider-line"></view>
+      <view wx:if="{{shopDetail.content.industryType}}" class="transfer-without-facilities detail-sort">
+        <view class="title">经营类型</view>
+        <view class="items">{{shopDetail.content.industryType}}</view>
+      </view>
+      <view wx:if="{{shopDetail.content.brandName}}" class="rest-time detail-sort">
+        <view class="title">品牌名称</view>
+        <view class="items">{{shopDetail.content.brandName}}</view>
+      </view>
+      <view wx:if="{{shopDetail.content.type}}" class="fit-operate detail-sort">
+        <view class="title">首选类型</view>
+        <view class="items">{{shopDetail.content.type}} </view>
+      </view>
+      <view wx:if="{{shopDetail.content.doorWidth > 0}}" class="rest-time detail-sort">
+        <view class="title">门宽要求</view>
+        <view class="items">{{shopDetail.content.doorWidth/100}}米</view>
+      </view>
+    </view>
+    <!--物业配套-->
+    <view  wx:if="{{hasFacilities.length > 0}}" class="facilities">
+      <view class="title">物业配套</view>
+      <view class="facility-img-tag">
+        <view wx:for="{{hasFacilities}}" wx:key="index" wx:if="{{index<4}}" class="img-tag-item-block">
+          <image src="{{item.imageUrl}}"></image>
+          <view class="decription">{{item.title}}</view>
+        </view>
+
+        <navigator wx:if="{{ facilitiesLength > 4 }}" url="../facility/facilities-list?facilities={{shopDetail.content.facilities}}" class="img-tag-item-block">
+          <image src="../../images/common/facilities_more.png"></image>
+          <view class="decription">更多</view>
+        </navigator>
+      </view>
+    </view>
+    <!--店铺描述-->
+    <view wx:if="{{shopDetail.description!=''}}" class="shop-decription">
+      <view class="title">店铺描述</view>
+      <view class="decription">{{shopDetail.description}}</view>
+    </view>
+     <view class="space-block"></view>
+  </view>
+  <!--客服服务方式-->
+  <view class="customer-service">
+    <view class="customer-info">
+      <view class="name">{{shopDetail.contact}}</view>
+      <view class="phone-number">{{shopDetail.mobile}}</view>
+    </view>
+    <navigator  class="tq" data-customerCall='{{customerMobile}}' bindtap="makeCustomerPhoneCall">
+      <image class="tq-tag" src="../../images/common/customer.png"></image>
+      <view class="title">客服</view>
+    </navigator>
+    <navigator class="call" data-call='{{shopDetail.mobile}}' bindtap="makePhoneCall">
+      <image class="call-tag" src="../../images/common/phone.png"></image>
+    </navigator>
+  </view>
+</view>

@@ -1,0 +1,45 @@
+var apiUrl=require("../../js/constant");
+var request=require("../../js/common");
+
+var params = { sessionId: '' };
+var industry=request.httpRequest(apiUrl.httpUrl.clientUrl,"POST",'baseData_listDistrict',params);
+
+function getDistrict() {
+
+    var allData;
+    var city;
+    var bigDistrictData;
+    var smallDistrictData;
+
+    return new Promise((resolve,reject)=>{
+        industry.then((result)=>{
+            var res = result.data.result;
+
+
+            res.objects.forEach(function (value, key) {
+                allData.push(value);
+                //所有的市
+                value.code.toString().length == 4 ? city.push(value) : '';
+                //所有市内区域
+                value.code.toString().length == 6 ? bigDistrictData.push(value) : '';
+                //所有区域内小区域
+                value.code.toString().length == 8 ? smallDistrictData.push(value) : '';
+            });
+
+
+
+            var location = {
+                allData: allData,
+                city: city,
+                bigDistrictData: bigDistrictData,
+                smallDistrictData: smallDistrictData
+            }
+            resolve(location);
+            sessionStorage.setItem("cities",JSON.stringify(location.city));
+        })
+    })
+}
+
+module.exports={
+    getDistrict:getDistrict
+}

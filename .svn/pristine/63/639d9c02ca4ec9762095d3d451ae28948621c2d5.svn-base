@@ -1,0 +1,306 @@
+.page {
+  background: #f0f0f0;
+}
+
+.carousel {
+  width: 100%;
+  height: 400rpx;
+  position: relative;
+}
+
+.swiper, .swiper-item, .slide-image {
+  width: 100%;
+  /*height: 0.53vwmin;*/
+  height: 400rpx;
+}
+
+.rent-tag {
+  position: absolute;
+  bottom: 30rpx;
+  left: 30rpx;
+  height: 42rpx;
+}
+
+.rent-tag image {
+  width: 32rpx;
+  height: 42rpx;
+}
+
+.image-tag {
+  position: absolute;
+  right: 30rpx;
+  bottom: 30rpx;
+  width: 88rpx;
+  height: 48rpx;
+  border-radius: 12rpx;
+  background: rgba(0, 0, 0, 0.5);
+  vertical-align: middle;
+  line-height: 48rpx;
+}
+
+.image-tag image {
+  position: absolute;
+  width: 24rpx;
+  height: 20rpx;
+  top: 15rpx;
+  left: 11rpx;
+}
+
+.page-num {
+  font-size: 0.6rem;
+  color: #fff;
+  position: absolute;
+  /*top: 6rpx;*/
+  left: 45rpx;
+}
+
+/*商铺信息*/
+
+.shop-info {
+  padding: 0rpx 40rpx 0rpx 40rpx;
+  background: #fff;
+}
+
+.info-title {
+  text-align: center;
+  padding-top: 30rpx;
+  font-weight: 600;
+  color: #424242;
+}
+
+.fee {
+  display: inline-block;
+  width: 30rpx;
+  height: 35rpx;
+}
+
+.side-info {
+  text-align: center;
+  color: #b4b4b4;
+}
+
+.side-info .info {
+  display: inline-block;
+  margin: 0 40rpx;
+  font-size: 0.7rem;
+}
+
+.left-line, .right-line {
+  border-top: 1px solid #b4b4b4;
+  border-color: #ccc;
+  display: inline-block;
+  width: 64rpx;
+  position: relative;
+  vertical-align: middle;
+}
+
+.main-info {
+  margin-top: 35rpx;
+  margin-bottom: 15rpx;
+}
+
+.area, .transfer-fee, .rent-fee {
+  text-align: center;
+  display: inline-block;
+  width: 33%;
+  font-size: 0.8rem;
+  margin-bottom: 10rpx;
+}
+
+.main-info .title {
+  color: #666;
+  font-size: 0.7rem;
+  font-size: 600;
+}
+
+.main-info .data {
+  color: #ff3a55;
+  font-weight: 700;
+}
+
+.area, .transfer-fee {
+  border-right: 1px solid #f0f0f0;
+}
+
+.area-rent, .rent-fee-Rent {
+  width: 49%;
+  text-align: center;
+  display: inline-block;
+  font-size: 0.8rem;
+  margin-bottom: 10rpx;
+}
+
+.area-rent {
+  border-right: 1px solid #f0f0f0;
+}
+
+/*信息详情*/
+
+.info-detail {
+  margin-top: 20rpx;
+  padding: 0rpx 40rpx 0rpx 40rpx;
+  background: #fff;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.item-detail {
+  padding: 20rpx 0rpx 20rpx 0rpx;
+}
+
+.info-detail .title {
+  text-align: center;
+  width: 125rpx;
+  display: inline-block;
+  color: #666;
+  text-align: justify;
+}
+
+.info-detail .items {
+  display: inline-block;
+  color: #424242;
+  margin-left: 30rpx;
+  max-width: 75%;
+  vertical-align: top;
+}
+
+.detail-sort {
+  padding: 10rpx 0rpx;
+}
+
+.address-block {
+  padding: 32rpx 0rpx;
+  border-bottom: 1px solid #e6e6e6;
+  border-top: 1px solid #e6e6e6;
+}
+
+.map-tag {
+  width: 48rpx;
+  height: 74rpx;
+  vertical-align: middle;
+}
+
+.address {
+  display: inline-block;
+  width: 85%;
+  padding-left: 35rpx;
+  color: #424242;
+  vertical-align: middle;
+}
+
+/*物业配套*/
+
+.facilities {
+  padding-top: 30rpx;
+  padding-bottom: 30rpx;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.facilities .title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #424242;
+}
+
+.img-tag-item-block {
+  display: inline-block;
+  width: 20%;
+  text-align: center;
+  background: #fff;
+}
+
+.img-tag-item-block image {
+  width: 76rpx;
+  height: 87rpx;
+  vertical-align: top;
+}
+
+.img-tag-item-block .decription {
+  text-align: center;
+}
+
+/*店铺描述*/
+
+.shop-decription {
+  padding-top: 30rpx;
+  padding-bottom: 30rpx;
+
+  /*border-bottom:  1px solid #e6e6e6;*/
+}
+
+.shop-decription .title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #424242;
+}
+
+.shop-decription .decription {
+  color: #666;
+  font-size: 0.8rem;
+  margin-top: 10rpx;
+}
+
+/*客服*/
+
+.customer-service {
+  /*height: 120rpx;*/
+  padding: 0rpx 40rpx 0rpx 40rpx;
+  margin-top: 20rpx;
+  background: #fff;
+    position:fixed;
+width:100%;
+bottom:0px;
+border-top:1px solid #e6e6e6;
+
+}
+
+.customer-info, .tq, .call {
+  display: inline-block;
+  height: 44px;
+}
+
+.tq-tag {
+  width: 50rpx;
+  height: 55rpx;
+  vertical-align: middle; 
+}
+
+.call-tag {
+  width: 80rpx;
+  height: 80rpx;
+  /*vertical-align: middle*/
+}
+
+.customer-info {
+  width: 55%;
+}
+
+.customer-info .name {
+  color: #333;
+  font-size: 0.75rem;
+}
+
+.customer-info .phone-number {
+  color: #656565;
+  font-size: 0.75rem;
+}
+
+.tq {
+  padding-top: 15rpx;
+}
+
+.tq .title {
+  color: #9a9a9a;
+  font-size: 0.65rem;
+}
+
+.tq, .call {
+  width: 20%;
+  text-align: center;
+  background: #fff;
+  text-align: center;
+}
+.space-block{
+  width: 100%;
+  height: 60px;
+}

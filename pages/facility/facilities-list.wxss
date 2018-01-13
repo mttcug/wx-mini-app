@@ -1,0 +1,28 @@
+/* pages/facility/facilities-list.wxss */
+page{
+  background: #fff;
+}
+.fascilities .list-item{
+  padding: 40rpx 65rpx 40rpx 65rpx;
+}
+.fascilities .item{
+  height: 87rpx;
+  position: relative;
+  margin-bottom: 20rpx;
+  line-height: 87rpx;
+}
+.fascilities .item .title,.fascilities .item .img-tag{
+  display: inline-block;
+  vertical-align: middle;
+}
+.fascilities .item .title{
+  font-size: 1rem;
+  /*font-weight: 600;*/
+  color: #424242;
+}
+.img-tag{
+  width: 76rpx;
+  height: 87rpx;
+  position: absolute;
+  right: 0px;
+}
